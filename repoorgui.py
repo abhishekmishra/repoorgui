@@ -26,7 +26,7 @@ def is_git_repo(path):
 
 
 # Get all the subdirectories of the repo parent path (might call this workspace folder).
-_limit = 5 # 0 for all
+_limit = 5  # 0 for all
 _, all_subdirs, other_files = next(os.walk(WORKSPACE_FOLDER))
 
 _count = 0
@@ -42,39 +42,76 @@ for dir in all_subdirs:
             _count += 1
 
 
+def getRemoteIfExits(repo):
+    try:
+        return repo.remote()
+    except ValueError as ve:
+        return None
+
+
+def getRemoteUrl(remote):
+    if remote:
+        return next(remote.urls)
+    else:
+        return None
+
 # print(WORKSPACE_REPOS)
 
 # exit(0)
 
 ################# GUI Code ##################
 
-sg.theme('DarkAmber')   # Add a touch of color
+
+sg.theme('DarkBlack1')   # Add a touch of color
 # All the stuff inside your window.
 
 tbBtnFont = 'Helvetica 14'
 
 toolbar = [
-    sg.Button('📂', font=tbBtnFont), sg.Button('🛈', font=tbBtnFont)
+    sg.Button('🗘', k="refresh_repos", font=tbBtnFont),
+    sg.Button('📂', k="open_dir", font=tbBtnFont),
+    sg.Button('🛈', k="repo_info", font=tbBtnFont)
 ]
 
 layout = [toolbar]
 
+# Create repository table
 table_rows = []
 for repo_dir, repo in WORKSPACE_REPOS.items():
     table_rows.append([
-        str(repo_dir), str(repo.working_dir), str(repo.head.commit.committed_datetime)
+        str(repo_dir), str(repo.working_dir), str(getRemoteUrl(
+            getRemoteIfExits(repo))), str(repo.head.commit.committed_datetime)
     ])
 
-print(table_rows)
-layout.append([sg.Table(headings=['Name', 'Dir', 'Last Commit'], values=table_rows)])
+repoTable = sg.Table(
+    headings=['Name', 'Directory', 'Remote(Origin)', 'Last Commit'],
+    values=table_rows,
+    enable_events=True,
+    justification='center',
+    display_row_numbers=True,
+    k='repo_table'
+)
+
+# Append table to the window layout
+layout.append([repoTable])
 
 # Create the Window
 window = sg.Window('Repo Org UI', layout)
+window.finalize()
+
+# table selection can only be called after window.read or window.finalize
+repoTable.update(select_rows=[0])
+
 # Event Loop to process "events" and get the "values" of the inputs
 while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED or event == 'Cancel':  # if user closes window or clicks cancel
         break
+    if event == 'open_dir':
+        selected_rows = values['repo_table']
+        for sr in selected_rows:
+            # print(table_rows[sr])
+            os.startfile(table_rows[sr][1])
     print('You entered ', values)
 
 window.close()
