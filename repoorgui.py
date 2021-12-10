@@ -9,6 +9,8 @@ print(WORKSPACE_FOLDER)
 
 # see https://stackoverflow.com/a/39956572
 # made changes to return repo object if exits
+
+
 def is_git_repo(path):
     try:
         r = git.Repo(path)
@@ -21,6 +23,7 @@ def is_git_repo(path):
 
 # print('.. is git repo -> ' + str(is_git_repo('..')))
 
+
 # Get all the subdirectories of the repo parent path (might call this workspace folder).
 _, all_subdirs, other_files = next(os.walk(WORKSPACE_FOLDER))
 
@@ -30,17 +33,25 @@ for dir in all_subdirs:
     if flag:
         WORKSPACE_REPOS[dir] = repo
 
-print(WORKSPACE_REPOS)
+# print(WORKSPACE_REPOS)
 
-exit(0)
+# exit(0)
 
 ################# GUI Code ##################
 
 sg.theme('DarkAmber')   # Add a touch of color
 # All the stuff inside your window.
-layout = [[sg.Text('Some text on Row 1')],
-          [sg.Text('Enter something on Row 2'), sg.InputText()],
-          [sg.Button('Ok'), sg.Button('Cancel')]]
+layout = [[sg.Text('folder'), sg.Text('path')],
+          ]
+
+table_rows = []
+for repo_dir, repo in WORKSPACE_REPOS.items():
+    table_rows.append([
+        str(repo_dir), str(repo.working_dir), str(repo.head.commit)
+    ])
+
+print(table_rows)
+layout.append([sg.Table(headings=['name', 'folder', 'last_commit'], values=table_rows)])
 
 # Create the Window
 window = sg.Window('Repo Org UI', layout)
