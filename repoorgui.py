@@ -68,7 +68,6 @@ sg.theme('DarkBlack1')   # Add a touch of color
 tbBtnFont = 'Helvetica 14'
 
 def createToolbarBtn(text, k=None, font=tbBtnFont, pad=((0,0), (0,0))):
-    print(pad)
     return sg.Button(text, k=k, font=font, p=pad)
 
 toolbar = [
