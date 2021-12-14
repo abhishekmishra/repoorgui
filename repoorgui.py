@@ -67,14 +67,17 @@ sg.theme('DarkBlack1')   # Add a touch of color
 
 tbBtnFont = 'Helvetica 14'
 
-def createToolbarBtn(text, k):
-    return sg.Button(text, k=k, font=tbBtnFont, pad=(0,0))
+def createToolbarBtn(text, k=None, font=tbBtnFont, pad=((0,0), (0,0))):
+    print(pad)
+    return sg.Button(text, k=k, font=font, p=pad)
 
 toolbar = [
-    createToolbarBtn('🗘', k="refresh_repos"),
     createToolbarBtn('📂', k="open_dir"),
     createToolbarBtn('✎', k="open_editor"),
-    createToolbarBtn('🛈', k="repo_info")
+    createToolbarBtn('🛈', k="repo_info"),
+    createToolbarBtn('gitk', k="gitk", pad=((30, 0), (0, 0))),
+    createToolbarBtn('git-gui', k="git-gui"),
+    createToolbarBtn('🗘', k="refresh_repos", pad=((30, 0), (0, 0))),
 ]
 
 layout = [toolbar]
@@ -118,6 +121,16 @@ while True:
             os.startfile(selected_item)
         elif event == 'open_editor':
             os.system('code ' + selected_item)
+        elif event == 'gitk':
+            currentdir = os.getcwd()
+            os.chdir(selected_item)
+            os.system('gitk ' + selected_item)
+            os.chdir(currentdir)
+        elif event == 'git-gui':
+            currentdir = os.getcwd()
+            os.chdir(selected_item)
+            os.system('git-gui')
+            os.chdir(currentdir)
     print('You entered ', values)
 
 window.close()
