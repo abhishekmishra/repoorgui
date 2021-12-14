@@ -67,10 +67,14 @@ sg.theme('DarkBlack1')   # Add a touch of color
 
 tbBtnFont = 'Helvetica 14'
 
+def createToolbarBtn(text, k):
+    return sg.Button(text, k=k, font=tbBtnFont, pad=(0,0))
+
 toolbar = [
-    sg.Button('🗘', k="refresh_repos", font=tbBtnFont),
-    sg.Button('📂', k="open_dir", font=tbBtnFont),
-    sg.Button('🛈', k="repo_info", font=tbBtnFont)
+    createToolbarBtn('🗘', k="refresh_repos"),
+    createToolbarBtn('📂', k="open_dir"),
+    createToolbarBtn('✎', k="open_editor"),
+    createToolbarBtn('🛈', k="repo_info")
 ]
 
 layout = [toolbar]
@@ -107,11 +111,13 @@ while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED or event == 'Cancel':  # if user closes window or clicks cancel
         break
-    if event == 'open_dir':
-        selected_rows = values['repo_table']
-        for sr in selected_rows:
-            # print(table_rows[sr])
-            os.startfile(table_rows[sr][1])
+    selected_rows = values['repo_table']
+    for sr in selected_rows:
+        selected_item = table_rows[sr][1]
+        if event == 'open_dir':
+            os.startfile(selected_item)
+        elif event == 'open_editor':
+            os.system('code ' + selected_item)
     print('You entered ', values)
 
 window.close()
