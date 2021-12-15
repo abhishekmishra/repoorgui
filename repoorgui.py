@@ -3,7 +3,7 @@ import git
 import PySimpleGUI as sg
 import os
 import sys
-from datetime import date, datetime
+from datetime import date, datetime, timezone, timedelta
 import threading
 
 WORKSPACE_FOLDER = os.path.abspath(os.path.join(os.getcwd(), '..'))
@@ -42,21 +42,34 @@ def getRemoteUrl(remote):
 # print('.. is git repo -> ' + str(is_git_repo('..')))
 
 
-_limit = 10  # 0 for all
+_limit = 25  # 0 for all
 
+def commit_days_text(numdays):
+    if numdays == 0:
+        return "today"
+    elif numdays == 1:
+        return "yesterday"
+    elif numdays > 1:
+        return str(numdays) + " days ago"
+    else:
+        "invalid"
 
 def getReposList(updateFunc=None):
-    completion = 0
+    table_rows = []
+    _now = datetime.now()
+    _td_one_day = timedelta(days=1)
+    _completion = 0
+
     if updateFunc:
-        updateFunc(completion)
+        updateFunc(_completion)
 
     # Get all the subdirectories of the repo parent path (might call this workspace folder).
     _, all_subdirs, other_files = next(os.walk(WORKSPACE_FOLDER))
 
     # getting the dirs is 10% progress
     if updateFunc:
-        completion = 10
-        updateFunc(completion)
+        _completion = 10
+        updateFunc(_completion)
 
     # checking if the repos are git repos and populating repo object
     # is 80% of the progress
@@ -71,8 +84,8 @@ def getReposList(updateFunc=None):
             _count += 1
         if _limit > 0 and _count >= _limit:
             if updateFunc:
-                completion += _item_progress
-                updateFunc(completion)
+                _completion += _item_progress
+                updateFunc(_completion)
             break
 
         dir_abspath = os.path.abspath(os.path.join(WORKSPACE_FOLDER, dir))
@@ -80,22 +93,25 @@ def getReposList(updateFunc=None):
         if flag:
             remote_url = str(getRemoteUrl(getRemoteIfExits(repo)))
             last_commit_datetime = str(repo.head.commit.committed_datetime)
-            WORKSPACE_REPOS[dir] = (repo, remote_url, last_commit_datetime)
+            td_since_last_commit = _now - repo.head.commit.committed_datetime.replace(tzinfo=None)
+            # print(td_since_last_commit)
+            days_since_last_commit, _ = divmod(td_since_last_commit, _td_one_day)
+            # print(days_since_last_commit)
+            WORKSPACE_REPOS[dir] = (repo, remote_url, last_commit_datetime, commit_days_text(days_since_last_commit))
         if updateFunc:
-            completion += _item_progress
-            updateFunc(completion)
+            _completion += _item_progress
+            updateFunc(_completion)
 
     # Create repository table
-    table_rows = []
-    for repo_dir, (repo, remote_url, last_commit_datetime) in WORKSPACE_REPOS.items():
+    for repo_dir, (repo, remote_url, last_commit_datetime, days_since_last_commit) in WORKSPACE_REPOS.items():
         table_rows.append([
-            str(repo_dir), str(repo.working_dir), remote_url, last_commit_datetime
+            str(repo_dir), str(repo.working_dir), remote_url, days_since_last_commit
         ])
 
     # creating the repo table with details is 10% progress
     if updateFunc:
-        completion = 100
-        updateFunc(completion)
+        _completion = 100
+        updateFunc(_completion)
 
     return table_rows
 
