@@ -1,6 +1,7 @@
 import git
 import PySimpleGUI as sg
 import os
+import sys
 from datetime import date, datetime
 import threading
 
@@ -117,23 +118,23 @@ def longUpdateRepos():
 ################# GUI Code ##################
 
 
-sg.theme('DarkBlack1')   # Add a touch of color
+sg.theme('DarkBlack')   # Add a touch of color
 # All the stuff inside your window.
 
-tbBtnFont = 'Helvetica 14'
+tbBtnFont = 'Helvetica 13'
+
 
 
 def createToolbarBtn(text, k=None, font=tbBtnFont, pad=((0, 0), (0, 0))):
     return sg.Button(text, k=k, font=font, p=pad)
 
-
 toolbar = [
-    createToolbarBtn('📂', k="open_dir"),
-    createToolbarBtn('✎', k="open_editor"),
-    createToolbarBtn('🛈', k="repo_info"),
-    createToolbarBtn('gitk', k="gitk", pad=((30, 0), (0, 0))),
-    createToolbarBtn('git-gui', k="git-gui"),
-    createToolbarBtn('🗘', k="refresh_repos", pad=((30, 0), (0, 0))),
+    createToolbarBtn('Open📂', k="open_dir"),
+    createToolbarBtn('Code✎', k="open_editor"),
+    createToolbarBtn('Info🛈', k="repo_info"),
+    createToolbarBtn('Gitk', k="gitk", pad=((30, 0), (0, 0))),
+    createToolbarBtn('Git-gui', k="git-gui"),
+    createToolbarBtn('Refresh🗘', k="refresh_repos", pad=((30, 0), (0, 0))),
 ]
 
 layout = [toolbar]
@@ -194,7 +195,10 @@ while True:
         elif event == 'git-gui':
             currentdir = os.getcwd()
             os.chdir(selected_item)
-            os.system('git-gui')
+            if sys.platform == 'win32':
+                os.system('git-gui')
+            else:
+                os.system('git -gui')
             os.chdir(currentdir)
     if event == "refresh_repos":
         longUpdateRepos()
