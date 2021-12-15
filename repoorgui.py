@@ -1,3 +1,4 @@
+from PySimpleGUI.PySimpleGUI import T
 import git
 import PySimpleGUI as sg
 import os
@@ -121,23 +122,31 @@ def longUpdateRepos():
 sg.theme('DarkBlack')   # Add a touch of color
 # All the stuff inside your window.
 
-tbBtnFont = 'Helvetica 13'
+#tbBtnFont = 'Helvetica 13'
+tbBtnFont = None
 
-
-
-def createToolbarBtn(text, k=None, font=tbBtnFont, pad=((0, 0), (0, 0))):
+def createToolbarBtn(text, k=None, font=tbBtnFont, pad=((5, 0), (5, 0))):
     return sg.Button(text, k=k, font=font, p=pad)
+
+repo_selection_bar = [
+    sg.Text(text='Workspace Dir:'),
+    sg.Input(default_text=WORKSPACE_FOLDER, k='workspace_folder', enable_events=True),
+    sg.FolderBrowse('Select', initial_folder=WORKSPACE_FOLDER, enable_events=True, k='select_workspace')
+]
 
 toolbar = [
     createToolbarBtn('Open📂', k="open_dir"),
     createToolbarBtn('Code✎', k="open_editor"),
     createToolbarBtn('Info🛈', k="repo_info"),
-    createToolbarBtn('Gitk', k="gitk", pad=((30, 0), (0, 0))),
+    createToolbarBtn('Gitk', k="gitk", pad=((30, 0), (5, 0))),
     createToolbarBtn('Git-gui', k="git-gui"),
-    createToolbarBtn('Refresh🗘', k="refresh_repos", pad=((30, 0), (0, 0))),
+    createToolbarBtn('Refresh🗘', k="refresh_repos", pad=((30, 0), (5, 0))),
 ]
 
-layout = [toolbar]
+layout = [
+    repo_selection_bar,
+    toolbar
+    ]
 
 repoTable = sg.Table(
     headings=['Name', 'Directory', 'Remote(Origin)', 'Last Commit'],
@@ -216,7 +225,11 @@ while True:
     elif event == '-UPDATE-LOADING-PROGRESS-':
         window['repo_load_progress'].update(
             current_count=values['-UPDATE-LOADING-PROGRESS-'], visible=True)
-    # print('Event ', event)
+    elif event == 'workspace_folder':
+        WORKSPACE_FOLDER = values['workspace_folder']
+        WORKSPACE_REPOS = {}
+        longUpdateRepos()
+    print('Event ', event)
     print('You entered ', values)
 
 window.close()
