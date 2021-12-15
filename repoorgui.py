@@ -136,6 +136,7 @@ repo_selection_bar = [
 
 toolbar = [
     createToolbarBtn('Open📂', k="open_dir"),
+    createToolbarBtn('Terminal', k="terminal"),
     createToolbarBtn('Code✎', k="open_editor"),
     createToolbarBtn('Info🛈', k="repo_info"),
     createToolbarBtn('Gitk', k="gitk", pad=((30, 0), (5, 0))),
@@ -154,6 +155,8 @@ repoTable = sg.Table(
     enable_events=True,
     justification='center',
     display_row_numbers=True,
+    expand_x=True,
+    expand_y=True,
     k='repo_table'
 )
 
@@ -178,7 +181,11 @@ statusbar = [
 layout.append(statusbar)
 
 # Create the Window
-window = sg.Window('Repo Org UI', layout)
+window = sg.Window(
+    'Repo Org UI', 
+    layout,
+    size=(800, 600)
+)
 window.finalize()
 
 # run the update repos task for the first load
@@ -209,6 +216,15 @@ while True:
             else:
                 os.system('git -gui')
             os.chdir(currentdir)
+        elif event == 'terminal':
+            currentdir = os.getcwd()
+            os.chdir(selected_item)
+            if sys.platform == 'win32':
+                os.system('wt -d ' + selected_item)
+            elif sys.platform == 'linux64':
+                os.system('terminator')
+            os.chdir(currentdir)
+
     if event == "refresh_repos":
         longUpdateRepos()
     elif event == '-UPDATE-REPOS-LIST-':
