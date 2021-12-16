@@ -44,6 +44,7 @@ def getRemoteUrl(remote):
 
 _limit = 25  # 0 for all
 
+
 def commit_days_text(numdays):
     if numdays == 0:
         return "today"
@@ -53,6 +54,7 @@ def commit_days_text(numdays):
         return str(numdays) + " days ago"
     else:
         "invalid"
+
 
 def getReposList(updateFunc=None):
     table_rows = []
@@ -93,11 +95,14 @@ def getReposList(updateFunc=None):
         if flag:
             remote_url = str(getRemoteUrl(getRemoteIfExits(repo)))
             last_commit_datetime = str(repo.head.commit.committed_datetime)
-            td_since_last_commit = _now - repo.head.commit.committed_datetime.replace(tzinfo=None)
+            td_since_last_commit = _now - \
+                repo.head.commit.committed_datetime.replace(tzinfo=None)
             # print(td_since_last_commit)
-            days_since_last_commit, _ = divmod(td_since_last_commit, _td_one_day)
+            days_since_last_commit, _ = divmod(
+                td_since_last_commit, _td_one_day)
             # print(days_since_last_commit)
-            WORKSPACE_REPOS[dir] = (repo, remote_url, last_commit_datetime, commit_days_text(days_since_last_commit))
+            WORKSPACE_REPOS[dir] = (
+                repo, remote_url, last_commit_datetime, commit_days_text(days_since_last_commit))
         if updateFunc:
             _completion += _item_progress
             updateFunc(_completion)
@@ -141,29 +146,34 @@ sg.theme('DarkBlack')   # Add a touch of color
 #tbBtnFont = 'Helvetica 13'
 tbBtnFont = None
 
+
 def createToolbarBtn(text, k=None, font=tbBtnFont, pad=((5, 0), (5, 0))):
     return sg.Button(text, k=k, font=font, p=pad)
 
+
 repo_selection_bar = [
     sg.Text(text='Workspace Dir:'),
-    sg.Input(default_text=WORKSPACE_FOLDER, k='workspace_folder', enable_events=True),
-    sg.FolderBrowse('Select', initial_folder=WORKSPACE_FOLDER, enable_events=True, k='select_workspace')
+    sg.Input(default_text=WORKSPACE_FOLDER,
+             k='workspace_folder', enable_events=True),
+    sg.FolderBrowse('Select', initial_folder=WORKSPACE_FOLDER,
+                    enable_events=True, k='select_workspace')
 ]
 
 toolbar = [
-    createToolbarBtn('Open📂', k="open_dir"),
+    createToolbarBtn('Open', k="open_dir"),
     createToolbarBtn('Terminal', k="terminal"),
-    createToolbarBtn('Code✎', k="open_editor"),
-    createToolbarBtn('Info🛈', k="repo_info"),
+    createToolbarBtn('Code', k="open_editor"),
+    createToolbarBtn('Info', k="repo_info"),
     createToolbarBtn('Gitk', k="gitk", pad=((30, 0), (5, 0))),
     createToolbarBtn('Git-gui', k="git-gui"),
     createToolbarBtn('Refresh🗘', k="refresh_repos", pad=((30, 0), (5, 0))),
+    createToolbarBtn('About', k="about_repoorgui"),
 ]
 
 layout = [
     repo_selection_bar,
     toolbar
-    ]
+]
 
 repoTable = sg.Table(
     headings=['Name', 'Directory', 'Remote(Origin)', 'Last Commit'],
@@ -198,7 +208,7 @@ layout.append(statusbar)
 
 # Create the Window
 window = sg.Window(
-    'Repo Org UI', 
+    'Repo Org UI',
     layout,
     size=(800, 600)
 )
@@ -261,6 +271,14 @@ while True:
         WORKSPACE_FOLDER = values['workspace_folder']
         WORKSPACE_REPOS = {}
         longUpdateRepos()
+    elif event == 'about_repoorgui':
+        sg.popup_ok(
+            'RepOrgUI v0.0.1',
+            'A Git Repos Workspace Organizer',
+            'Author: Abhishek Mishra <abhishekmishra3@gmail.com>',
+            'Project: https://github.com/abhishekmishra/repoorgui',
+            title="About RepOrgUI"
+        )
     print('Event ', event)
     print('You entered ', values)
 
