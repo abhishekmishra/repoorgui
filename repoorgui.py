@@ -179,10 +179,12 @@ repo_selection_bar = [
 ]
 
 toolbar = [
-    createToolbarBtn('Open', k="open_dir"),
-    createToolbarBtn('Terminal', k="terminal"),
-    createToolbarBtn('Code', k="open_editor"),
-    createToolbarBtn('Info', k="repo_info"),
+    createToolbarBtn('New Repo', k="new_repo"),
+    createToolbarBtn('Clone Repo', k="clone_repo"),
+    createToolbarBtn('Repo Info', k="repo_info"),
+    createToolbarBtn('Open Dir', k="open_dir"),
+    createToolbarBtn('Open Terminal', k="terminal"),
+    createToolbarBtn('VSCode', k="open_editor"),
     createToolbarBtn('Gitk', k="gitk", pad=((30, 0), (5, 0))),
     createToolbarBtn('Git-gui', k="git-gui"),
     createToolbarBtn('Refresh', k="refresh_repos", pad=((30, 0), (5, 0))),
@@ -287,9 +289,10 @@ while True:
         window['repo_load_progress'].update(
             current_count=values['-UPDATE-LOADING-PROGRESS-'], visible=True)
     elif event == 'workspace_folder':
-        WORKSPACE_FOLDER = values['workspace_folder']
-        WORKSPACE_REPOS = {}
-        longUpdateRepos()
+        if values['workspace_folder'] != WORKSPACE_FOLDER:
+            WORKSPACE_FOLDER = values['workspace_folder']
+            WORKSPACE_REPOS = {}
+            longUpdateRepos()
     elif event == 'about_repoorgui':
         sg.popup_ok(
             'RepOrgUI v0.0.1',
