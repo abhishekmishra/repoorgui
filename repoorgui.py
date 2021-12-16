@@ -5,6 +5,25 @@ import os
 import sys
 from datetime import date, datetime, timezone, timedelta
 import threading
+import platformdirs
+
+REPOORGUI_DATA_DIR = os.path.join(platformdirs.user_data_dir(), 'repoorgui')
+print(REPOORGUI_DATA_DIR)
+
+REPOORGUI_GITIGNORES_DIR = os.path.join(REPOORGUI_DATA_DIR, "gitignore")
+if os.path.isdir(REPOORGUI_GITIGNORES_DIR):
+    print(REPOORGUI_GITIGNORES_DIR, ' exists already. Will pull when needed.')
+else:
+    print(REPOORGUI_GITIGNORES_DIR, ' does not exist. Need to clone.')
+    try:
+        git.Repo.clone_from("https://github.com/github/gitignore.git", REPOORGUI_GITIGNORES_DIR)
+        print('https://github.com/github/gitignore.git cloned at ', REPOORGUI_GITIGNORES_DIR)
+    except git.GitCommandError as exception:
+        print(exception)
+        if exception.stdout:
+            print(exception.stdout)
+        if exception.stderr:
+            print(exception.stderr)
 
 WORKSPACE_FOLDER = os.path.abspath(os.path.join(os.getcwd(), '..'))
 WORKSPACE_REPOS = {}
@@ -166,7 +185,7 @@ toolbar = [
     createToolbarBtn('Info', k="repo_info"),
     createToolbarBtn('Gitk', k="gitk", pad=((30, 0), (5, 0))),
     createToolbarBtn('Git-gui', k="git-gui"),
-    createToolbarBtn('Refresh🗘', k="refresh_repos", pad=((30, 0), (5, 0))),
+    createToolbarBtn('Refresh', k="refresh_repos", pad=((30, 0), (5, 0))),
     createToolbarBtn('About', k="about_repoorgui"),
 ]
 
