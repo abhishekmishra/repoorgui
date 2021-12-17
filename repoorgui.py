@@ -9,6 +9,22 @@ import sys
 from datetime import date, datetime, timezone, timedelta
 import threading
 import platformdirs
+import argparse
+
+parser = argparse.ArgumentParser("repoorgui builder arguments")
+parser.add_argument('workspace')
+args = parser.parse_args()
+
+WORKSPACE_FOLDER = os.path.abspath(os.path.join(os.getcwd(), '..'))
+WORKSPACE_REPOS = {}
+
+if args.workspace:
+    WORKSPACE_FOLDER = args.workspace
+else:
+    print("Error no workspace provided.", file=sys.stderr)
+
+print(WORKSPACE_FOLDER)
+
 
 # x = sg.popup_ok(os.environ['PATH'])
 
@@ -30,10 +46,6 @@ else:
         if exception.stderr:
             print(exception.stderr)
 
-WORKSPACE_FOLDER = os.path.abspath(os.path.join(os.getcwd(), '..'))
-WORKSPACE_REPOS = {}
-
-print(WORKSPACE_FOLDER)
 
 # see https://stackoverflow.com/a/39956572
 # made changes to return repo object if exits
