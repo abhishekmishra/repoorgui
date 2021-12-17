@@ -1,11 +1,16 @@
+# https://stackoverflow.com/a/55943328/9483968
+import os
+os.environ["GIT_PYTHON_REFRESH"] = "quiet"
+
 from PySimpleGUI.PySimpleGUI import T
 import git
 import PySimpleGUI as sg
-import os
 import sys
 from datetime import date, datetime, timezone, timedelta
 import threading
 import platformdirs
+
+# x = sg.popup_ok(os.environ['PATH'])
 
 REPOORGUI_DATA_DIR = os.path.join(platformdirs.user_data_dir(), 'repoorgui')
 print(REPOORGUI_DATA_DIR)
