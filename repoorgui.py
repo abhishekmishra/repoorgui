@@ -10,6 +10,7 @@ from datetime import date, datetime, timezone, timedelta
 import threading
 import platformdirs
 import argparse
+from commands import *
 
 parser = argparse.ArgumentParser("repoorgui builder arguments")
 parser.add_argument('workspace')
@@ -205,7 +206,7 @@ toolbar = [
     createToolbarBtn('Gitk', k="gitk", pad=((30, 0), (5, 0))),
     createToolbarBtn('Git-gui', k="git-gui"),
     createToolbarBtn('Refresh', k="refresh_repos", pad=((30, 0), (5, 0))),
-    createToolbarBtn('About', k="about_repoorgui"),
+    createToolbarBtn('About', k="tb_about_repoorgui"),
 ]
 
 layout = [
@@ -251,6 +252,10 @@ window = sg.Window(
     size=(800, 600)
 )
 window.finalize()
+
+eventCommand = {
+    'tb_about_repoorgui': 'about_repoorgui'
+}
 
 # run the update repos task for the first load
 longUpdateRepos()
@@ -310,14 +315,8 @@ while True:
             WORKSPACE_FOLDER = values['workspace_folder']
             WORKSPACE_REPOS = {}
             longUpdateRepos()
-    elif event == 'about_repoorgui':
-        sg.popup_ok(
-            'RepOrgUI v0.0.1',
-            'A Git Repos Workspace Organizer',
-            'Author: Abhishek Mishra <abhishekmishra3@gmail.com>',
-            'Project: https://github.com/abhishekmishra/repoorgui',
-            title="About RepOrgUI"
-        )
+    elif event in eventCommand.keys():
+        run_command(eventCommand[event], window, event, values)
     print('Event ', event)
     print('You entered ', values)
 
