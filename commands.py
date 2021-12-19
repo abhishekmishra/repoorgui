@@ -1,6 +1,16 @@
 import PySimpleGUI as sg
 
+_ALL_COMMAND_FNS = {}
 
+def commandfn(f):
+    """
+    Decorator to be used for every command function,
+    so that the run_command function can find it when executing.
+    """
+    _ALL_COMMAND_FNS[f.__name__] = f
+    return f
+
+@commandfn
 def cmd_about_repoorgui(**kwargs):
     sg.popup_ok(
         'RepOrgUI v0.0.1',
@@ -10,8 +20,7 @@ def cmd_about_repoorgui(**kwargs):
         title="About RepOrgUI"
     )
 
-
-def run_command(command_name, window, event, values):
+def run_command(command_name, window=None, event=None, values=None, **kwargs):
     """
     Run command given by command_name(str) with arguments window, event, and values from the pysimplegui window
 
@@ -28,8 +37,8 @@ def run_command(command_name, window, event, values):
     Throws:
         NameError if cmd_%command_name% not found.
     """
-    cmd = globals()['cmd_' + command_name]
-    if cmd != None:
-        return cmd(window=window, event=event, values=values)
+    cmdfn = _ALL_COMMAND_FNS['cmd_' + command_name]
+    if cmdfn != None:
+        return cmdfn(window=window, event=event, values=values, **kwargs)
     else:
         NameError('cmd_' + command_name)
