@@ -164,7 +164,7 @@ while True:
             if sys.platform == 'win32':
                 os.system('git-gui')
             else:
-                os.system('git -gui')
+                os.system('git gui')
             os.chdir(currentdir)
         elif event == 'terminal':
             currentdir = os.getcwd()

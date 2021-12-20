@@ -96,7 +96,8 @@ def getReposList(updateFunc=None, appstate=None):
                     td_since_last_commit, _td_one_day)
                 # print(days_since_last_commit)
             except ValueError as ve:
-                print(ve)
+                # print(ve)
+                pass
             appstate.workspace_repos[dir] = (
                 repo, remote_url, last_commit_datetime, commit_days_text(days_since_last_commit))
         if updateFunc:
