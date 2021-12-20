@@ -2,7 +2,7 @@ from datetime import date, datetime, timezone, timedelta
 import threading
 import git
 import os
-from commands import commandfn
+from repoorgui.commands import commandfn
 
 # see https://stackoverflow.com/a/39956572
 # made changes to return repo object if exits

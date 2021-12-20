@@ -1,6 +1,6 @@
 # https://stackoverflow.com/a/55943328/9483968
-from gitworkspace import *
-from commands import *
+from repoorgui.gitworkspace import *
+from repoorgui.commands import *
 import argparse
 import platformdirs
 import sys
