@@ -2,3 +2,5 @@ pysimplegui
 gitpython
 pyinstaller
 platformdirs
+setuptools
+build
