@@ -35,14 +35,15 @@ _limit = 25  # 0 for all
 
 
 def commit_days_text(numdays):
-    if numdays == 0:
-        return "today"
-    elif numdays == 1:
-        return "yesterday"
-    elif numdays > 1:
-        return str(numdays) + " days ago"
-    else:
-        "invalid"
+    try:
+        if numdays == 0:
+            return "today"
+        elif numdays == 1:
+            return "yesterday"
+        elif numdays > 1:
+            return str(numdays) + " days ago"
+    except TypeError as te:
+        return "invalid"
 
 
 def getReposList(updateFunc=None, appstate=None):
@@ -84,13 +85,18 @@ def getReposList(updateFunc=None, appstate=None):
         flag, repo = is_git_repo(dir_abspath)
         if flag:
             remote_url = str(getRemoteUrl(getRemoteIfExits(repo)))
-            last_commit_datetime = str(repo.head.commit.committed_datetime)
-            td_since_last_commit = _now - \
-                repo.head.commit.committed_datetime.replace(tzinfo=None)
-            # print(td_since_last_commit)
-            days_since_last_commit, _ = divmod(
-                td_since_last_commit, _td_one_day)
-            # print(days_since_last_commit)
+            last_commit_datetime = '-'
+            days_since_last_commit = '-'
+            try:
+                last_commit_datetime = str(repo.head.commit.committed_datetime)
+                td_since_last_commit = _now - \
+                    repo.head.commit.committed_datetime.replace(tzinfo=None)
+                # print(td_since_last_commit)
+                days_since_last_commit, _ = divmod(
+                    td_since_last_commit, _td_one_day)
+                # print(days_since_last_commit)
+            except ValueError as ve:
+                print(ve)
             appstate.workspace_repos[dir] = (
                 repo, remote_url, last_commit_datetime, commit_days_text(days_since_last_commit))
         if updateFunc:
