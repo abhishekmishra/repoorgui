@@ -31,7 +31,11 @@ def getRemoteUrl(remote):
         return None
 
 
-_limit = 25  # 0 for all
+# 0 for all
+# TODO: there is a division by 0 below for _limit=0
+# needs to be fixed.
+# for now setting this to a large number
+_limit = 1000  
 
 
 def commit_days_text(numdays):
